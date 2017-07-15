@@ -1,6 +1,7 @@
 # Define some variables used in resource creation
 variable "keypair" {}
 variable "vpcname" {}
+variable "cidr" {}
 variable "images" {
   type = "map"
   default = {
@@ -14,7 +15,7 @@ variable "images" {
 
 # Create resources for application deployment
 resource "aws_vpc" "vpc_tuto" {
-  cidr_block = "172.31.0.0/16"
+  cidr_block = "${var.cidr}/16"
   enable_dns_support = true
   enable_dns_hostnames = true
   tags = {
@@ -24,7 +25,7 @@ resource "aws_vpc" "vpc_tuto" {
 
 resource "aws_subnet" "public_subnet_us_west_1a" {
   vpc_id                  = "${aws_vpc.vpc_tuto.id}"
-  cidr_block              = "172.31.0.0/20"
+  cidr_block              = "${var.cidr}/20"
   map_public_ip_on_launch = true
   tags = {
     Name =  "Subnet main"
