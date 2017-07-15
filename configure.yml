@@ -1,0 +1,40 @@
+---
+- hosts: "all"
+  become: true
+  gather_facts: true
+
+- hosts: "tag_Tier_Web"
+  become: true
+  gather_facts: false
+  tasks:
+    - name: "Configure web HAProxy instance with templated configuration"
+      template:
+        src: "templates/web-haproxy.cfg.j2"
+        dest: "/etc/haproxy/haproxy.cfg"
+        owner: "root"
+        group: "root"
+        mode: 0644
+
+- hosts: "tag_Tier_App"
+  become: true
+  gather_facts: false
+  tasks:
+    - name: "Render templated Django settings file"
+      template:
+        src: "templates/settings.py.j2"
+        dest: "/home/ubuntu/fitcycle/fitcycle/settings.py"
+        owner: "ubuntu"
+        group: "ubuntu"
+        mode: 0644
+
+- hosts: "tag_Name_DB_Load_Balancer"
+  become: true
+  gather_facts: false
+  tasks:
+    - name: "Configure DB HAProxy instance with templated configuration"
+      template:
+        src: "templates/db-haproxy.cfg.j2"
+        dest: "/etc/haproxy/haproxy.cfg"
+        owner: "root"
+        group: "root"
+        mode: 0644
