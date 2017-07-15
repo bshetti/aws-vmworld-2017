@@ -1,0 +1,45 @@
+global
+	log /dev/log	local0
+	log /dev/log	local1 notice
+	chroot /var/lib/haproxy
+	user haproxy
+	group haproxy
+	daemon
+
+defaults
+	log	global
+	mode    tcp	
+	option	tcplog
+	option	dontlognull
+        contimeout 5000
+        clitimeout 50000
+        srvtimeout 50000
+	errorfile 400 /etc/haproxy/errors/400.http
+	errorfile 403 /etc/haproxy/errors/403.http
+	errorfile 408 /etc/haproxy/errors/408.http
+	errorfile 500 /etc/haproxy/errors/500.http
+	errorfile 502 /etc/haproxy/errors/502.http
+	errorfile 503 /etc/haproxy/errors/503.http
+	errorfile 504 /etc/haproxy/errors/504.http
+
+frontend www
+    bind *:80
+    default_backend django_pool
+
+backend django_pool
+    balance roundrobin
+    mode tcp
+#    redirect location http://172.31.5.250:8000/mortgage/ 
+{% for host in groups['tag_Tier_App'] %}
+    server {{ hostvars[host]['ansible_hostname'] }} {{ hostvars[host]['ec2_private_ip_address'] }}:8000 check
+{% endfor %}
+
+listen mysql-cluster 0.0.0.0:3306
+    mode tcp
+    balance roundrobin
+    option mysql-check user root
+
+    server db01 172.31.0.114:3306 check
+#    server db02 10.4.29.99:3306 check
+#    server db03 10.4.29.98:3306 check
+

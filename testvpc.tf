@@ -1,19 +1,9 @@
-variable "VPCNAME" {}
-
-variable "akey" {}
-variable "skey" {}
-variable "awsregion" {}
-
-provider "aws" {
-  access_key = "${var.akey}"
-  secret_key = "${var.skey}"
-  region     = "${var.awsregion}"
-}
-
+# Define some variables used in resource creation
+variable "keypair" {}
+variable "vpcname" {}
+variable "cidr" {}
 variable "images" {
-  
   type = "map"
-
   default = {
     web="ami-a7b886b1"
     mngt="ami-dfb886c9"
@@ -23,18 +13,19 @@ variable "images" {
   }
 }
 
+# Create resources for application deployment
 resource "aws_vpc" "vpc_tuto" {
-  cidr_block = "172.31.0.0/16"
+  cidr_block = "${var.cidr}/16"
   enable_dns_support = true
   enable_dns_hostnames = true
   tags = {
-    Name = "${var.VPCNAME}"
+    Name = "${var.vpcname}"
   }
 }
 
 resource "aws_subnet" "public_subnet_us_west_1a" {
   vpc_id                  = "${aws_vpc.vpc_tuto.id}"
-  cidr_block              = "172.31.0.0/20"
+  cidr_block              = "${var.cidr}/20"
   map_public_ip_on_launch = true
   tags = {
     Name =  "Subnet main"
@@ -99,50 +90,42 @@ resource "aws_security_group" "app_sec_group" {
         cidr_blocks = ["0.0.0.0/0"]
     }
     vpc_id = "${aws_vpc.vpc_tuto.id}"
-    
 }
-
 
 resource "aws_instance" "Db1" {
   ami           = "${var.images["db"]}"
   instance_type = "t2.micro"
   subnet_id = "${aws_subnet.public_subnet_us_west_1a.id}"
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
-  private_ip                  = "172.31.10.220"
+  key_name                    = "${var.keypair}"
   tags {
         Name = "Db1"
         Tier = "DB"
   }
-
 }
-
 
 resource "aws_instance" "DbLb" {
   ami           = "${var.images["dblb"]}"
   instance_type = "t2.micro"
   subnet_id = "${aws_subnet.public_subnet_us_west_1a.id}"
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
-  private_ip                  = "172.31.14.166"
+  key_name                    = "${var.keypair}"
   tags {
-        Name = "Db Load Balancer"
-        Tier = "DB"
+        Name = "DB Load Balancer"
+        Tier = "DBLB"
   }
-
 }
-
-
 
 resource "aws_instance" "App1" {
   ami           = "${var.images["app"]}"
   instance_type = "t2.micro"
   subnet_id = "${aws_subnet.public_subnet_us_west_1a.id}"
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
-  private_ip                  = "172.31.4.252"
+  key_name                    = "${var.keypair}"
   tags {
         Name = "App1"
         Tier = "App"
   }
-
 }
 
 resource "aws_instance" "App2" {
@@ -150,12 +133,11 @@ resource "aws_instance" "App2" {
   instance_type = "t2.micro"
   subnet_id = "${aws_subnet.public_subnet_us_west_1a.id}"
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
-  private_ip                  = "172.31.13.93"
+  key_name                    = "${var.keypair}"
   tags {
         Name = "App2"
         Tier = "App"
   }
-
 }
 
 resource "aws_instance" "App3" {
@@ -163,12 +145,11 @@ resource "aws_instance" "App3" {
   instance_type = "t2.micro"
   subnet_id = "${aws_subnet.public_subnet_us_west_1a.id}"
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
-  private_ip                  = "172.31.9.174"
+  key_name                    = "${var.keypair}"
   tags {
         Name = "App3"
         Tier = "App"
   }
-
 }
 
 resource "aws_instance" "Web1" {
@@ -176,12 +157,11 @@ resource "aws_instance" "Web1" {
   instance_type = "t2.micro"
   subnet_id = "${aws_subnet.public_subnet_us_west_1a.id}"
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
-  private_ip                  = "172.31.1.86"
+  key_name                    = "${var.keypair}"
   tags {
         Name = "Web1"
         Tier = "Web"
   }
-
 }
 
 resource "aws_instance" "Web2" {
@@ -189,12 +169,11 @@ resource "aws_instance" "Web2" {
   instance_type = "t2.micro"
   subnet_id = "${aws_subnet.public_subnet_us_west_1a.id}"
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
-  private_ip                  = "172.31.3.177"
+  key_name                    = "${var.keypair}"
   tags {
         Name = "Web2"
         Tier = "Web"
   }
-
 }
 
 resource "aws_instance" "Db2" {
@@ -202,12 +181,11 @@ resource "aws_instance" "Db2" {
   instance_type = "t2.micro"
   subnet_id = "${aws_subnet.public_subnet_us_west_1a.id}"
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
-  private_ip                  = "172.31.10.117"
+  key_name                    = "${var.keypair}"
   tags {
-        Name = "Db-2"
+        Name = "Db2"
         Tier = "DB"
   }
-
 }
 
 resource "aws_instance" "Mngt" {
@@ -215,10 +193,9 @@ resource "aws_instance" "Mngt" {
   instance_type = "t2.micro"
   subnet_id = "${aws_subnet.public_subnet_us_west_1a.id}"
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
-  private_ip                  = "172.31.11.68"
+  key_name                    = "${var.keypair}"
   tags {
         Name = "Management"
         Tier = "Mngt"
   }
-
 }
