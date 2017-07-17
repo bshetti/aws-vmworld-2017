@@ -12,11 +12,11 @@ _Software required to use these templates:_ Ansible, Ansible EC2 dynamic invento
 
 2. Create a file named `terraform.tfvars` in the repository (don't worry, Git will ignore it) and populate it with values for the following variables:
 
-    akey (your AWS access key)
-    skey (your AWS secret access key)
-    awsregion (the AWS region to use; currently, only us-west-1 or us-east-1)
-    keypair (the name of an AWS SSH keypair to inject into instances)
-    vpcname (the name you'd like assigned to the new VPC)
+    akey (your AWS access key)  
+    skey (your AWS secret access key)  
+    awsregion (the AWS region to use; currently, only us-west-1 or us-east-1)  
+    keypair (the name of an AWS SSH keypair to inject into instances)  
+    vpcname (the name you'd like assigned to the new VPC)  
     cidr (the network block _without_ subnet mask)
 
 3. Run `terraform validate` to ensure there are no errors in the Terraform configuration. If any errors are reported, fix them before proceeding.
@@ -31,9 +31,9 @@ _Software required to use these templates:_ Ansible, Ansible EC2 dynamic invento
 
 8. Restart services:
 
-    * Restart HAProxy on the Web tier instances.
-    * Restart Django on the App tier instances.
-    * Restart HAProxy on the DB Load Balancer instance.
+    * Restart HAProxy on the Web tier instances. Note that you _can't_ just use `sudo service haproxy restart` here; you must manually kill the HAProxy process(es) and restart them. Use `ps aux` to find the HAProxy PID; this command will also show how to restart HAProxy.
+    * Restart Django on the App tier instances. Use `ps aux` to find the Python processes and kill them; then use `sudo djangostart.sh` to restart Django.
+    * Restart HAProxy on the DB Load Balancer instance. Using `sudo service haproxy restart` works fine here.
 
 You should be ready to go!
 
@@ -62,4 +62,4 @@ To run multiple instances of this application, make multiple copies of this repo
 
 ## Destroying the Infrastructure
 
-Simply run `terraform destroy` to tear down the AWS infrastructure.
+Simply run `terraform destroy` to tear down the AWS infrastructure. If you made multiple copies in order to run multiple instances (see previous section), you'll need to run `terraform destroy` in each directory.
