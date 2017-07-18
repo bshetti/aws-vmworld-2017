@@ -25,11 +25,19 @@ _Software required to use these templates:_ Ansible, Ansible EC2 dynamic invento
 
 5. Run `terraform apply` to create the desired infrastructure.
 
-6. When Terraform is completed, wait a couple of minutes and then run `hosts/ec2.py --refresh-cache` to refresh the dynamic Ansible inventory.
+6. Few steps prior to configuring the new instances:
 
-7. Run `ansible-playbook configure.yml` to configure the EC2 instances with the dynamically-assigned IP addresses.
+-Obtain the VPC ID from the terraform state file (look for vpc id in the file).  
+-Add the line `instance_filters = vpc-id=<value>` to the `hosts/ec2.ini` file. This allows the env to only see that VPC.
+-in `ec2.ini`, change the `cache_path` line to remove the `~/` from the beginning of the path. This will ensure a unique cache for each environment
+-in the `ansible.cfg` file, there is a reference to the SSH private key it should use. Change this to match the SSH keypair you’re injecting into the instances.
 
-8. Restart services:
+
+7. When Terraform is completed, wait a couple of minutes and then run `hosts/ec2.py --refresh-cache` to refresh the dynamic Ansible inventory.
+
+8. Run `ansible-playbook configure.yml` to configure the EC2 instances with the dynamically-assigned IP addresses.
+
+9. Restart services:
 
     * Restart HAProxy on the Web tier instances.
     * Restart Django on the App tier instances.
