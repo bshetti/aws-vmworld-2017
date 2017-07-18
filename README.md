@@ -27,10 +27,10 @@ _Software required to use these templates:_ Ansible, Ansible EC2 dynamic invento
 
 6. Few steps prior to configuring the new instances:
 
--Obtain the VPC ID from the terraform state file (look for vpc id in the file).  
--Add the line `instance_filters = vpc-id=<value>` to the `hosts/ec2.ini` file. This allows the env to only see that VPC.
--in `ec2.ini`, change the `cache_path` line to remove the `~/` from the beginning of the path. This will ensure a unique cache for each environment
--in the `ansible.cfg` file, there is a reference to the SSH private key it should use. Change this to match the SSH keypair you’re injecting into the instances.
+    *Obtain the VPC ID from the terraform state file (look for vpc_id in the file - i.e. "vpc-88e58aec").  
+    *Add the line `instance_filters = vpc-id=<value>` to the `hosts/ec2.ini` file. This allows the env to only see that VPC.
+    *in `ec2.ini`, change the `cache_path` line to remove the `~/` from the beginning of the path. This will ensure a unique cache for each environment
+    *in the `ansible.cfg` file, there is a reference to the SSH private key it should use. Change this to match the SSH keypair you’re injecting into the instances.
 
 
 7. When Terraform is completed, wait a couple of minutes and then run `hosts/ec2.py --refresh-cache` to refresh the dynamic Ansible inventory.
@@ -40,8 +40,19 @@ _Software required to use these templates:_ Ansible, Ansible EC2 dynamic invento
 9. Restart services:
 
     * Restart HAProxy on the Web tier instances.
+        * The HAProxy instances have an issue - service haproxy restart DOES NOT work
+        * use the following:
+          `sudo ps aux | grep haproxy` - note the process id
+          `sudo kill xxx`
+          copy the ps line for haproxy from the output and use sudo to rerun it
+          it should be something like: `sudo /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -D -p /var/run/haproxy.pid`
+           
     * Restart Django on the App tier instances.
-    * Restart HAProxy on the DB Load Balancer instance.
+        * `sudo ps aux | grep manage` - note all the process ids - should be three
+        * `sudo kill xxx xxx xxx `
+        * in the ubuntu folder run `./startdjango.sh`
+        
+    * Restart HAProxy on the DB Load Balancer instance. (`sudo service haproxy restart` works)
 
 You should be ready to go!
 
