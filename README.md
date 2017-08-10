@@ -116,6 +116,7 @@ You should be ready to go!
         - use prospect;
             - paste and execute the code in the "sqldump.txt"
         - truncate polls_prospect;
+        - alter table polls_prospect AUTO_INCREMENT = 1;
         - select * from polls_prospect;
     * result should be "empty"
 
