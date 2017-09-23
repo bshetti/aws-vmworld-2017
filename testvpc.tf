@@ -5,11 +5,11 @@ variable "cidr" {}
 variable "images" {
   type = "map"
   default = {
-    web="ami-a7b886b1"
-    mngt="ami-dfb886c9"
-    db="ami-1dbb850b"
-    dblb="ami-71bd8367"
-    app="ami-75bd8363"
+    web="ami-c79c63bf"
+    mngt="ami-7b986703"
+    db="ami-189d6260"
+    dblb="ami-569b642e"
+    app="ami-bf9d62c7"
   }
 }
 
@@ -99,6 +99,7 @@ resource "aws_instance" "Db1" {
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
   key_name                    = "${var.keypair}"
   tags {
+        App = "${var.vpcname}"
         Name = "Db1"
         Tier = "DB"
   }
@@ -111,6 +112,7 @@ resource "aws_instance" "DbLb" {
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
   key_name                    = "${var.keypair}"
   tags {
+        App = "${var.vpcname}"
         Name = "DB Load Balancer"
         Tier = "DBLB"
   }
@@ -123,6 +125,7 @@ resource "aws_instance" "App1" {
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
   key_name                    = "${var.keypair}"
   tags {
+        App = "${var.vpcname}"
         Name = "App1"
         Tier = "App"
   }
@@ -135,6 +138,7 @@ resource "aws_instance" "App2" {
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
   key_name                    = "${var.keypair}"
   tags {
+        App = "${var.vpcname}"
         Name = "App2"
         Tier = "App"
   }
@@ -147,6 +151,7 @@ resource "aws_instance" "App3" {
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
   key_name                    = "${var.keypair}"
   tags {
+        App = "${var.vpcname}"
         Name = "App3"
         Tier = "App"
   }
@@ -159,6 +164,7 @@ resource "aws_instance" "Web1" {
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
   key_name                    = "${var.keypair}"
   tags {
+        App = "${var.vpcname}"
         Name = "Web1"
         Tier = "Web"
   }
@@ -171,6 +177,7 @@ resource "aws_instance" "Web2" {
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
   key_name                    = "${var.keypair}"
   tags {
+        App = "${var.vpcname}"
         Name = "Web2"
         Tier = "Web"
   }
@@ -183,6 +190,7 @@ resource "aws_instance" "Db2" {
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
   key_name                    = "${var.keypair}"
   tags {
+        App = "${var.vpcname}"
         Name = "Db2"
         Tier = "DB"
   }
@@ -195,6 +203,7 @@ resource "aws_instance" "Mngt" {
   vpc_security_group_ids = ["${aws_security_group.app_sec_group.id}"]
   key_name                    = "${var.keypair}"
   tags {
+        App = "${var.vpcname}"
         Name = "Management"
         Tier = "Mngt"
   }
